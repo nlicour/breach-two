@@ -1,0 +1,6 @@
+@Breach.ApiOne_HostAddress = http://localhost:5010
+
+GET {{Breach.ApiOne_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
