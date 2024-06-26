@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<SiteContext>( x => x.UseSqlServer(""));
+const string connectionString = "";
+
+builder.Services.AddDbContext<SiteContext>( x => x.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
@@ -38,7 +41,31 @@ app.MapGet("/v2/weatherforecast/{id}", async (SiteContext context, string id) =>
 })
 .WithOpenApi();
 
+app.MapGet("sqli/weatherforcast/{id}", (string id) =>{
 
+    using SqlConnection connection = new SqlConnection(connectionString);
+
+    connection.Open();
+
+    string sql = $"SELECT name, collation_name FROM sys.databases where id = {id}";
+
+    using SqlCommand command = new SqlCommand(sql, connection);
+
+    return GetWF(command.ExecuteReader());
+});
+
+IEnumerable<WeatherForecast> GetWF(SqlDataReader reader){
+    while (reader.Read())
+        {
+            yield return new WeatherForecast(
+                DateOnly.MinValue,
+                12,
+                reader.GetString(0)
+            );
+            // Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
+        }
+
+}
 
 
 app.Run();
