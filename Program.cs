@@ -29,8 +29,9 @@ app.MapGet("/weatherforecast", async (SiteContext context) =>
     return await context.Set<WeatherForecast>().ToArrayAsync();
 });
 
-app.MapGet("/weatherforecast/{id}", async (SiteContext context, string id) =>
+app.MapGet("/weatherforecast/{id}", async (ILogger logger, SiteContext context, string id) =>
 {
+    logger.LogInformation("id : {id}", id);
     return await context.Set<WeatherForecast>().Where(x => x.Summary == id).ToArrayAsync();
 });
 
