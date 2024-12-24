@@ -19,8 +19,9 @@ on:
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
-  schedule:
-    - cron: '44 5 * * 3'
+  # schedule:
+  #  - cron: '44 5 * * 3'
+  workflow_dispatch:
 
 jobs:
   analyze:
