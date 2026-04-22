@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,19 +25,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/weatherforecast", async (SiteContext context) =>
+app.MapGet("/weatherforecast", () =>
 {
-    return await context.Set<WeatherForecast>().ToArrayAsync();
+    return new WeatherForecast(DateOnly.MaxValue, 0, "youp");;
+    // return await context.Set<WeatherForecast>().ToArrayAsync();
 });
 
-app.MapGet("/weatherforecast/{id}", async (ILogger logger, SiteContext context, string id) =>
+app.MapGet("/weatherforecast/{id}", async ([FromServices] ILogger logger, [FromServices] SiteContext context, string id) =>
 {
     logger.LogInformation("id : {id}", id.Replace(Environment.NewLine, ""));
     return await context.Set<WeatherForecast>().Where(x => x.Summary == id).ToArrayAsync();
 });
 
 
-app.MapGet("/v2/weatherforecast/{id}", async (SiteContext context, string id) =>
+app.MapGet("/v2/weatherforecast/{id}", async ([FromServices] SiteContext context, string id) =>
 {
     return await context.Set<WeatherForecast>().FromSql($"Select * from wf where Summary = {id}").ToArrayAsync();
     // return await context.Database.SqlQuery<WeatherForecast>($"Select * from wf where Summary = {id}").ToArrayAsync();
